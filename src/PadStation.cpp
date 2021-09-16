@@ -1,18 +1,18 @@
-#ifndef SUPERPAD_CPP
-#define SUPERPAD_CPP
+#ifndef PADSTATION_CPP
+#define PADSTATION_CPP
 
 /*
-     SuperPAD - CPP
+     PadStation - CPP
      ==============
      NKS ©2021
 
-     Reads either Nintendo NES or Super NES controllers with auto detection between the two.
+     Reads and writes to PS1 and PS2 style controllers with auto detection between the two.
 
 */
 
-#include "SuperPad.h"
+#include "PadStation.h"
 
-SuperPad::SuperPad(int d, int c, int l, int t) {
+PadStation::PadStation(int d, int c, int l, int t) {
   data = d;
   clock = c;
   latch = l;
@@ -27,7 +27,7 @@ SuperPad::SuperPad(int d, int c, int l, int t) {
   }
 }
 
-bool SuperPad::update() {
+bool PadStation::update() {
   uint16_t in = read();
   if (in != lastButtons && !interrupt) {
     lastButtons = in;
@@ -36,13 +36,13 @@ bool SuperPad::update() {
   return interrupt;
 }      // Returns true if buttons have changed
 
-void SuperPad::type(uint8_t t) {
+void PadStation::type(uint8_t t) {
   padType = t;
   lockType = true;
 }    // Force pad type. Will always use this type of pad.
 // Warning, this will disable the class if it's above 1
 
-uint16_t SuperPad::read() {
+uint16_t PadStation::read() {
   uint16_t bIn = 0x0000;
 
   latchIn();
@@ -68,7 +68,7 @@ uint16_t SuperPad::read() {
   return bIn;
 }    // Returns byte if NES and int if SNES
 
-uint8_t SuperPad::detectPad() {
+uint8_t PadStation::detectPad() {
   latchIn();
   serialIn(data, clock);
   uint8_t b = serialIn(data, clock);
@@ -82,27 +82,27 @@ uint8_t SuperPad::detectPad() {
   }
   return padType;
 }
-uint8_t SuperPad::readByte() {
+uint8_t PadStation::readByte() {
   return (read() & 0xFF);
 }         // Read first byte (and only byte on NES)
 
-uint16_t SuperPad::readData() {
+uint16_t PadStation::readData() {
   return read();
 }        // Returns whole int of buttons
 
-void SuperPad::latchIn() {
+void PadStation::latchIn() {
   digitalWrite(clock, HIGH); 
   digitalWrite(latch, HIGH);
   delayMicroseconds(1);       // This is here to allow the CD4021's sufficient time to load
   digitalWrite(latch, LOW);
 }
 
-uint8_t SuperPad::type() {
+uint8_t PadStation::type() {
   detectPad();
   return padType;
 }
 
-uint8_t SuperPad::serialIn(uint8_t dataPin, uint8_t clockPin) {
+uint8_t PadStation::serialIn(uint8_t dataPin, uint8_t clockPin) {
   uint8_t value = 0;
   uint8_t i;
   for (i = 0; i < 8; ++i) {
