@@ -6,7 +6,7 @@
      ==============
      NKS ©2021
 
-     Reads and writes to PS1 and PS2 style controllers with auto detection between the two.
+     Reads and writes to PS1 and PS2 style controllers with auto detection between the two. *warning does not actually do this yet*
 
 */
 
